@@ -31,7 +31,7 @@ model MenuCategory {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   restaurantId String     @map("restaurant_id")
-  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
 
   products Product[]
 
@@ -48,10 +48,10 @@ model Product {
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
 
-  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   restaurantId String     @map("restaurant_id")
 
-  menuCategory   MenuCategory @relation(fields: [menuCategoryId], references: [id])
+  menuCategory   MenuCategory @relation(fields: [menuCategoryId], references: [id], onDelete: Cascade)
   menuCategoryId String       @map("menu_category_id")
 
   orderProduct OrderProduct[]
@@ -70,7 +70,7 @@ model Order {
   orderProducts OrderProduct[]
 
   restaurantId String     @map("restaurant_id")
-  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
 
   @@map("orders")
 }
@@ -84,7 +84,7 @@ model OrderProduct {
   updatedAt      DateTime @updatedAt @map("updated_at")
 
   productId String  @map("product_id")
-  product   Product @relation(fields: [productId], references: [id])
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
   Order     Order   @relation(fields: [orderId], references: [id])
 
   @@map("order_products")
