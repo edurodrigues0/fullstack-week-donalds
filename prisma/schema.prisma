@@ -1,0 +1,103 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Restaurant {
+  id             String   @id @default(uuid())
+  name           String
+  slug           String
+  description    String
+  avatarImageUrl String   @map("avatar_image_url")
+  coverImageUrl  String   @map("cover_image_url")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  menuCategories MenuCategory[]
+  products       Product[]
+  Order          Order[]
+
+  @@map("restaurants")
+}
+
+model MenuCategory {
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  restaurantId String     @map("restaurant_id")
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+
+  products Product[]
+
+  @@map("menu_categories")
+}
+
+model Product {
+  id           String   @id @default(uuid())
+  name         String
+  description  String
+  priceInCents Float    @map("price_in_cents")
+  ingredients  String[]
+  imageUrl     String   @map("image_url")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+  restaurantId String     @map("restaurant_id")
+
+  menuCategory   MenuCategory @relation(fields: [menuCategoryId], references: [id])
+  menuCategoryId String       @map("menu_category_id")
+
+  orderProduct OrderProduct[]
+
+  @@map("products")
+}
+
+model Order {
+  id                Int               @id @default(autoincrement())
+  total             Float
+  status            OrderStatus
+  consumptionMethod ConsumptionMethod @map("consumption_method")
+  createdAt         DateTime          @default(now()) @map("created_at")
+  updatedAt         DateTime          @updatedAt @map("updated_at")
+
+  orderProducts OrderProduct[]
+
+  restaurantId String     @map("restaurant_id")
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+
+  @@map("orders")
+}
+
+model OrderProduct {
+  id             String   @id @default(uuid())
+  orderId        Int      @map("order_id")
+  quantity       Int
+  price_in_cents Float    @map("price_in_cents")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  productId String  @map("product_id")
+  product   Product @relation(fields: [productId], references: [id])
+  Order     Order   @relation(fields: [orderId], references: [id])
+
+  @@map("order_products")
+}
+
+enum OrderStatus {
+  PENDING
+  IN_PREPARATION
+  FINISHED
+  CANCELED
+}
+
+enum ConsumptionMethod {
+  TAKEAWAY
+  DINE_IN
+}
