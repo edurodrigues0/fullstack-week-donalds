@@ -4,6 +4,7 @@ import { notFound } from "next/navigation"
 import { getRestaurantBySlug } from "@/data/get-restaurant-by-slug"
 
 import { RestaurantHeader } from "./components/header"
+import RestaurantCategories from "./components/restaurant-categories"
 
 interface RestaurantMenuPageProps {
   params: Promise<{ slug: string }>
@@ -25,15 +26,16 @@ export default async function RestaurantMenuPage({
     return notFound()
   }
 
-  const restaurant = await getRestaurantBySlug(slug)
+  const result = await getRestaurantBySlug(slug)
 
-  if (!restaurant) {
+  if (!result || !result.restaurant) {
     return notFound()
   }
 
   return (
     <div>
-      <RestaurantHeader restaurant={restaurant} />
+      <RestaurantHeader restaurant={result.restaurant} />
+      <RestaurantCategories restaurant={result.restaurant} />
     </div>
   );
 
